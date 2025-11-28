@@ -324,7 +324,7 @@ export const AdPreview: React.FC<AdPreviewProps> = ({ campaign, imageUrl, brandN
 
             {/* Ad Body Text */}
             <div className="px-3 py-2 flex-shrink-0">
-              <p className="text-sm text-gray-800 whitespace-pre-wrap break-words line-clamp-4">{campaign.meta_ad.body}</p>
+              <p className="text-sm text-gray-800 whitespace-pre-wrap break-words line-clamp-4">{campaign.meta_ad_payload.body}</p>
             </div>
 
             {/* Image */}
@@ -343,7 +343,7 @@ export const AdPreview: React.FC<AdPreviewProps> = ({ campaign, imageUrl, brandN
                   {cleanUrl}
                 </p>
                 <h3 className="text-sm font-bold text-gray-900 leading-tight mt-0.5 truncate">
-                  {campaign.meta_ad.headline}
+                  {campaign.meta_ad_payload.headline}
                 </h3>
               </div>
               <a
@@ -352,7 +352,7 @@ export const AdPreview: React.FC<AdPreviewProps> = ({ campaign, imageUrl, brandN
                 rel="noreferrer"
                 className="flex-shrink-0 bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-semibold py-1.5 px-3 rounded border border-gray-300 transition-colors whitespace-nowrap text-decoration-none"
               >
-                {campaign.meta_ad.cta}
+                {campaign.meta_ad_payload.call_to_action_type.replace(/_/g, ' ')}
               </a>
             </div>
           </div>
@@ -362,7 +362,7 @@ export const AdPreview: React.FC<AdPreviewProps> = ({ campaign, imageUrl, brandN
             <div className="mb-1 flex items-center gap-2 flex-wrap">
               <span className="text-xs font-bold text-gray-900">{t.previewSponsored}</span>
               <div className="w-0.5 h-0.5 bg-gray-500 rounded-full"></div>
-              <span className="text-xs text-gray-600 truncate max-w-[200px]">{cleanUrl}{campaign.google_ad.path}</span>
+              <span className="text-xs text-gray-600 truncate max-w-[200px]">{cleanUrl}{campaign.google_ad_payload.path}</span>
               <div className="w-0.5 h-0.5 bg-gray-500 rounded-full"></div>
               <div className="flex text-xs text-blue-700 hover:underline cursor-pointer">
                 {displayBrand}
@@ -370,11 +370,11 @@ export const AdPreview: React.FC<AdPreviewProps> = ({ campaign, imageUrl, brandN
             </div>
             <a href={websiteUrl || '#'} target="_blank" rel="noreferrer" className="block group">
               <h3 className="text-xl text-blue-800 group-hover:underline leading-snug break-words">
-                {campaign.google_ad.headlines[0]} | {campaign.google_ad.headlines[1]}
+                {campaign.google_ad_payload.headlines[0].text} | {campaign.google_ad_payload.headlines[1].text}
               </h3>
             </a>
             <p className="text-sm text-gray-600 mt-1 leading-relaxed break-words">
-              {campaign.google_ad.descriptions[0]} {campaign.google_ad.descriptions[1]}
+              {campaign.google_ad_payload.descriptions[0].text} {campaign.google_ad_payload.descriptions[1].text}
             </p>
 
             <div className="mt-3 flex gap-2 flex-wrap">

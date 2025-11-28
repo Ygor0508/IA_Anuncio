@@ -511,23 +511,49 @@ export const generateAdContent = async (
     
     Expected JSON Structure:
     {
-      "meta_ad": {
+      "campaign_config": {
+        "status": "PAUSED",
+        "daily_budget": 50.00,
+        "currency": "BRL",
+        "final_url": "https://example.com"
+      },
+      "assets": {
+        "image_url": ""
+      },
+      "meta_ad_payload": {
         "headline": "string (max 25 chars)",
         "body": "string (max 90 chars)",
-        "cta": "string",
-        "link_description": "string"
+        "call_to_action_type": "string (e.g. SHOP_NOW, LEARN_MORE)",
+        "link_description": "string",
+        "targeting": {
+          "age_min": 18,
+          "age_max": 65,
+          "geo_locations": { "countries": ["BR"] },
+          "interests": ["string", "string"]
+        }
       },
-      "google_ad": {
-        "headlines": ["string (max 30 chars)", "string (max 30 chars)", "string (max 30 chars)"],
-        "descriptions": ["string (max 90 chars)", "string (max 90 chars)"],
-        "path": "string (e.g. /product)"
+      "google_ad_payload": {
+        "headlines": [
+          { "text": "string (max 30 chars)", "pinned_field": "HEADLINE_1" },
+          { "text": "string (max 30 chars)" },
+          { "text": "string (max 30 chars)" }
+        ],
+        "descriptions": [
+          { "text": "string (max 90 chars)" },
+          { "text": "string (max 90 chars)" }
+        ],
+        "path": "string (max 15 chars, e.g. /product)",
+        "keywords": [
+          { "text": "string", "match_type": "PHRASE" },
+          { "text": "string", "match_type": "BROAD" }
+        ]
       },
       "metadata": {
         "campaign_name_suggestion": "string",
         "target_audience_inferred": "string",
         "tone_of_voice": "string",
         "key_benefit_highlighted": "string",
-        "image_prompt": "A strictly physical description of the product for an AI image generator. Describe material, color, shape, and setting. NO abstract concepts.",
+        "image_prompt": "A detailed visual description for an AI image generator. If physical product: describe materials, colors, shape. If service: describe the scene, action, or outcome (e.g. sparkling clean pool with blue water). NO text, NO abstract concepts.",
         "compliance_check": boolean,
         "keywords": ["string", "string", "string", "string", "string"]
       }
@@ -597,22 +623,17 @@ export const generateAdImage = async (
   const visualDescription = campaignData.metadata.image_prompt || productFeatures;
 
   const imagePrompt = `
-    Create a professional product photography shot.
+    Create a high-quality advertising image for: "${productName}".
     
-    Subject: "${productName}"
-    Visual Description: ${visualDescription}
+    Visual Scene Description: ${visualDescription}
     
-    Style: ${campaignData.metadata.tone_of_voice} aesthetic, high-end commercial photography, 4k resolution, studio lighting.
+    Style: ${campaignData.metadata.tone_of_voice}, professional, high resolution, 4k, photorealistic.
     
-    NEGATIVE PROMPT (Do NOT include):
-    - Text, words, letters, watermarks, logos.
-    - Distorted hands, distorted objects.
-    - Abstract conceptual art (e.g., floating brains, glowing auras).
-    - People (unless specifically asked for in description).
-    
-    Composition:
-    - Center the product.
-    - Clean, complimentary background.
+    IMPORTANT GUIDELINES:
+    - If this is a service (e.g., cleaning, consulting), show the outcome or a professional setting representing the service.
+    - If this is a physical product, show it clearly with studio lighting.
+    - NO TEXT, NO WORDS, NO LOGOS, NO WATERMARKS.
+    - Avoid distorted objects or hands.
   `;
 
   // CASE 2 & 3: AI Generation (either from text or from image reference)

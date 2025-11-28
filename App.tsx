@@ -524,7 +524,7 @@
 
 
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { InputForm } from './components/InputForm';
 import { AdPreview } from './components/AdPreview';
 import { JsonOutput } from './components/JsonOutput';
@@ -683,6 +683,8 @@ const App: React.FC = () => {
   const [searchSources, setSearchSources] = useState<{ title: string; uri: string }[] | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
 
+  const resultsRef = useRef<HTMLDivElement>(null);
+
   const t = translations[language];
 
   const handleGenerate = async () => {
@@ -696,6 +698,12 @@ const App: React.FC = () => {
       // Step 1: Generate Text Content (with RAG)
       setStatus(GenerationStatus.WRITING);
       const { campaign, sources } = await generateAdContent(productName, features, language);
+      
+      // Inject user-provided URL if available
+      if (websiteUrl) {
+        campaign.campaign_config.final_url = websiteUrl;
+      }
+
       setResult(campaign);
       setSearchSources(sources);
 
@@ -711,8 +719,22 @@ const App: React.FC = () => {
       );
 
       setImageUrl(imageResult);
+      
+      // Inject Image URL into JSON result
+      if (imageResult) {
+          // If it's a base64 string, we might want to simulate a hosted URL or just put the base64 (though large)
+          // For this demo, we'll put a placeholder or the base64 if needed. 
+          // Ideally, in a real app, we'd upload this to S3/Cloudinary and put the link here.
+          campaign.assets.image_url = "https://your-cdn.com/generated-image.jpg"; // Placeholder for clean JSON
+      }
 
       setStatus(GenerationStatus.COMPLETED);
+
+      // Scroll to results on mobile/if needed
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+
     } catch (err: any) {
       console.error(err);
       setError(err.message || "An error occurred while generating assets. Please check your API key.");
@@ -764,7 +786,7 @@ const App: React.FC = () => {
       <main className="flex-grow p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6">
 
         {/* Input Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative">
           <div className="lg:col-span-1">
             <InputForm
               onSubmit={handleGenerate}
@@ -806,7 +828,7 @@ const App: React.FC = () => {
           </div>
 
           {/* Results Section */}
-          <div className="lg:col-span-2 space-y-6">
+          <div ref={resultsRef} className="lg:col-span-2 space-y-6 lg:sticky lg:top-24 h-fit">
             {result ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[600px]">
                 {/* Left Column: Preview */}
